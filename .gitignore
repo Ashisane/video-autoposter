@@ -1,0 +1,38 @@
+# ── Secrets & auth tokens ──────────────────────────────────────────
+.env
+credentials.json
+token_drive.json
+token_youtube.json
+
+# ── Auto-generated state files ────────────────────────────────────
+processed.json
+quota.json
+
+# ── Downloaded/temp media ─────────────────────────────────────────
+downloads/
+frames/
+
+# ── Logs ──────────────────────────────────────────────────────────
+logs/
+
+# ── Python ────────────────────────────────────────────────────────
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── IDE ───────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── OS ────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
