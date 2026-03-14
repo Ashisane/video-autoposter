@@ -121,9 +121,10 @@ def _startup_checks() -> None:
         )
 
     missing = []
-    for var in ("GOOGLE_DRIVE_FOLDER_ID", "GEMINI_API_KEY"):
-        if not os.getenv(var):
-            missing.append(var)
+    if not os.getenv("GOOGLE_DRIVE_FOLDER_IDS") and not os.getenv("GOOGLE_DRIVE_FOLDER_ID"):
+        missing.append("GOOGLE_DRIVE_FOLDER_IDS")
+    if not os.getenv("GEMINI_API_KEY"):
+        missing.append("GEMINI_API_KEY")
     if missing:
         raise EnvironmentError(
             f"The following required .env variables are not set: {', '.join(missing)}"
@@ -135,21 +136,27 @@ def _startup_checks() -> None:
 def _get_folder_ids() -> list[str]:
     """Return the list of Drive folder IDs to process.
 
-    Reads ``GOOGLE_DRIVE_FOLDER_IDS`` (comma-separated) from ``.env``.
-    Falls back to the single ``GOOGLE_DRIVE_FOLDER_ID`` variable for
-    backward compatibility.
+    Checks ``GOOGLE_DRIVE_FOLDER_IDS`` (comma-separated, preferred) first,
+    then falls back to ``GOOGLE_DRIVE_FOLDER_ID``.  Both variables support
+    multiple IDs separated by commas.
 
     Returns
     -------
     list[str]
-        Ordered list of folder ID strings.  Empty list if neither variable
-        is set (startup checks will have already caught this).
+        Ordered list of folder ID strings, each properly stripped.
     """
+    def _split(val: str) -> list[str]:
+        return [fid.strip() for fid in val.split(",") if fid.strip()]
+
     multi = os.getenv("GOOGLE_DRIVE_FOLDER_IDS", "")
     if multi:
-        return [fid.strip() for fid in multi.split(",") if fid.strip()]
+        return _split(multi)
+
     single = os.getenv("GOOGLE_DRIVE_FOLDER_ID", "")
-    return [single] if single else []
+    if single:
+        return _split(single)   # also handle comma-separated values in the old var
+
+    return []
 
 
 # ---------------------------------------------------------------------------
